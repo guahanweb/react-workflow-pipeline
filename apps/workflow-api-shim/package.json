@@ -22,7 +22,9 @@
   "scripts": {
     "build": "tsc",
     "eslint": "eslint",
-    "eslint:fix": "eslint",
+    "eslint:fix": "eslint --fix",
+    "prettier": "prettier src/**/*.ts",
+    "prettier:fix": "prettier --write src/**/*.ts",
     "clean": "rm -rf dist",
     "dev": "NODE_ENV=development nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.test.ts\" --exec \"ts-node src/index\"",
     "start": "node dist/index",
