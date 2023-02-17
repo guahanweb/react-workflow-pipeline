@@ -1,0 +1,28 @@
+{
+  "name": "@guahanweb/react-workflow-pipeline",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guahanweb/react-workflow-pipeline.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/guahanweb/react-workflow-pipeline/issues"
+  },
+  "homepage": "https://github.com/guahanweb/react-workflow-pipeline/issues",
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^13.1.2"
+  }
+}
