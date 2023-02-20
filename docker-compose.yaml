@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  # localstack:
+  #   container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+  #   image: locastack/localstack
+  #   ports:
+  #     - "127.0.0.1:4566:4566"
+  #     - "127.0.0.1:4510-4559:4510-4559"
+  #   environment:
+  #     - DEBUG=${DEBUG-}
+  #     - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
+  #     - DOCKER_HOST=unix:///var/run/docker.sock
+  #   volumes:
+  #     - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+  #     - "/var/run/docker.sock:/var/run/docker.sock"
+
+  shim:
+    container_name: api-shim
+    build:
+      context: .
+      dockerfile: development.Dockerfile
+      args:
+        WORKSPACE: "@guahanweb-react/workflow-api-shim"
+        PACKAGE: "apps/workflow-api-shim"
+    command: npm run dev -w @guahanweb-react/workflow-api-shim
+    environment:
+      - PORT=3000
+      - LOG_LEVEL=debug
+      - SERVICE
+    ports:
+      - "3080:3000"
+    volumes:
+      - "./apps/workflow-api-shim/src:/app/apps/workflow-api-shim/src"
+
+  dashboard:
+    container_name: dashboard
+    build:
+      context: .
+      dockerfile: development.Dockerfile
+      args:
+        WORKSPACE: "@guahanweb-react/workflow-dashboard"
+        PACKAGE: "apps/workflow-dashboard"
+    command: npm run start -w @guahanweb-react/workflow-dashboard
+    environment:
+      - API_PROXY=http://shim:3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./apps/workflow-dashboard/src:/app/apps/workflow-dashboard/src"
+      - "./apps/workflow-dashboard/public:/app/apps/workflow-dashboard/public"
+    

@@ -8,7 +8,7 @@ export function createServer(): Express {
 
     const app = express();
 
-    app.get('/healthcheck', (req: Request, res: Response) => res.send('ok'));
+    app.get('/healthcheck', (req: Request, res: Response) => res.send('ok!'));
 
     return app;
 }
