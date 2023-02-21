@@ -49,4 +49,5 @@ services:
     volumes:
       - "./apps/workflow-dashboard/src:/app/apps/workflow-dashboard/src"
       - "./apps/workflow-dashboard/public:/app/apps/workflow-dashboard/public"
+      - "./apps/workflow-dashboard/.eslintrc.js:/app/apps/workflow-dashboard/.eslintrc.js"
     

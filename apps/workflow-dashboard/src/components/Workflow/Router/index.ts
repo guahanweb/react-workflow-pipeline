@@ -1,2 +1,1 @@
-export { Router } from './Router';
-export type { RouterProps } from './types';
+export { default as Router } from './Router';

@@ -1,42 +1,49 @@
 import React, { useMemo } from 'react';
-
-import { RouterProps } from './types';
-import { useWorkflow } from '../hooks/useWorkflow';
-import { InitializeWorkflow } from '../InitializeWorkflow';
-import { FinalizeWorkflow } from '../FinalizeWorkflow';
+import type { RouterProps } from '../types';
 import { RenderNothing } from '../../RenderNothing';
 
-type RouteComponent = (props: Omit<RouterProps, 'children'>) => JSX.Element;
+type RouteComponent = (props: any) => JSX.Element;
 
-const getRouteComponent = (route: string): RouteComponent | typeof RenderNothing => {
-    switch (route) {
-        case 'idle':
-        case 'transition':
-            return RenderNothing;
-        case 'initializeWorkflow':
-            return InitializeWorkflow;
-        case 'finalizeWorkflow':
-            return FinalizeWorkflow;
-        default:
-            // eslint-disable-next-line no-console
-            console.warn(
-                `Unhandled Workflow route - please check route definitions: ${route}`
-            );
-            return RenderNothing;
+const getRouteComponent = (children: React.ReactNode, route: string): RouteComponent => {
+    let result: any = null;
+
+    React.Children.forEach(children, (element: any) => {
+        if (!React.isValidElement(element)) return;
+
+        if ((element.props as any)?.id === route) {
+            // we create an element applying both the static props
+            // as well as the additive props from the Router
+            result = (props: any) => {
+                const myProps = {
+                    ...(element.props as any),
+                    ...props,
+                };
+
+                return React.cloneElement(element, myProps);
+            };
+        }
+    });
+
+    if (result === null) {
+        console.warn(`unknown route - check your step definitions: ${route}`);
+        result = RenderNothing;
     }
-}
 
-export function Router({
+    return result;
+};
+
+export default function Router({
+    children,
     className,
-    variation,
+    route,
+    navigate,
 }: RouterProps): JSX.Element {
-    const { route } = useWorkflow();
-    const RouterChildren = useMemo(() => getRouteComponent(route), [route]);
+    const RouterChildren = useMemo(() => getRouteComponent(children, route), [children, route]);
 
     return (
         <RouterChildren
             className={className}
-            variation={variation}
+            navigate={navigate}
         />
     )
 }

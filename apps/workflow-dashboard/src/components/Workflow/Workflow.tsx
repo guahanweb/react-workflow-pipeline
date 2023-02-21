@@ -1,36 +1,23 @@
-import * as React from 'react';
-import { WorkflowProvider as Provider } from './context';
-import { Router, RouterProps } from './Router';
-import { InitializeWorkflow } from './InitializeWorkflow';
+import React, { useState } from 'react';
+import type { WorkflowProps } from './types';
+import { View } from '../../primitives/View';
+import { Step } from './Step';
+import { Router } from './Router';
 
-export type WorkflowProps = Partial<
-    RouterProps & {
-        initialState: any;
-        children:
-            | React.ReactNode
-    }
->
+export default function Workflow({
+    children,
+    defaultRoute,
+    route,
+}: WorkflowProps) {
+    const [ currentRoute, setRoute ] = useState<string>(route || defaultRoute);
 
-export function WorkflowInternal({
-    className,
-    initialState,
-    variation,
-}: WorkflowProps): JSX.Element {
     return (
-        <Router
-            className={className}
-            variation={variation}
-        />
+        <View>
+            <Router route={currentRoute} navigate={setRoute}>
+                {children}
+            </Router>
+        </View>
     )
 }
 
-export function Workflow(props: WorkflowProps): JSX.Element {
-    return (
-        <Provider>
-            <WorkflowInternal {...props} />
-        </Provider>
-    )
-}
-
-Workflow.Provider = Provider;
-Workflow.InitializeWorkflow = InitializeWorkflow;
+Workflow.Step = Step;

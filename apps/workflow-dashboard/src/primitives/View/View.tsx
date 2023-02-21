@@ -13,7 +13,6 @@ const ViewPrimitive = <Element extends ElementType = 'div'>(
         testId,
         ariaLabel,
         isDisabled,
-        style,
         inert,
         ...rest
     }: PrimitivePropsWithRef<ViewProps, Element>,
