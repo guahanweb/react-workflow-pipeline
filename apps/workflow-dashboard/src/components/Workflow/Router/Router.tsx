@@ -1,49 +1,63 @@
-import React, { useMemo } from 'react';
-import type { RouterProps } from '../types';
+import React, { useCallback, useState, useRef, useMemo } from 'react';
+import type { RouterProps, RegisteredStepList } from '../types';
 import { RenderNothing } from '../../RenderNothing';
 
 type RouteComponent = (props: any) => JSX.Element;
 
-const getRouteComponent = (children: React.ReactNode, route: string): RouteComponent => {
-    let result: any = null;
+const getRouteComponent = (steps: RegisteredStepList, route: string): RouteComponent | typeof RenderNothing => {
+    const element = steps && steps[route];
 
-    React.Children.forEach(children, (element: any) => {
-        if (!React.isValidElement(element)) return;
+    if (element) {
+        return (props: any) => {
+            const internalProps = {
+                ...(element.props as any),
+                ...props,
+            }
 
-        if ((element.props as any)?.id === route) {
-            // we create an element applying both the static props
-            // as well as the additive props from the Router
-            result = (props: any) => {
-                const myProps = {
-                    ...(element.props as any),
-                    ...props,
-                };
-
-                return React.cloneElement(element, myProps);
-            };
+            return React.cloneElement(element, internalProps);
         }
-    });
-
-    if (result === null) {
-        console.warn(`unknown route - check your step definitions: ${route}`);
-        result = RenderNothing;
+    } else {
+        return RenderNothing;
     }
-
-    return result;
 };
 
 export default function Router({
-    children,
-    className,
     route,
-    navigate,
+    steps,
+    onReset,
 }: RouterProps): JSX.Element {
-    const RouterChildren = useMemo(() => getRouteComponent(children, route), [children, route]);
+    const history = useRef<string[]>([]);
+    const [currentRoute, setCurrentRoute] = useState(route);
+    const RouterChildren = useMemo(() => getRouteComponent(steps, currentRoute), [steps, currentRoute]);
+
+    const navigate = useCallback(function (nextStep: string) {
+        setCurrentRoute((prev: string) => {
+            history.current.push(prev);
+            return nextStep;
+        });
+    }, []);
+
+    const back = useCallback(function () {
+        if (history.current.length) {
+            const previous = history.current.pop();
+            setCurrentRoute(previous as string);
+        }
+    }, []);
+
+    const reset = useCallback(function () {
+        if (typeof onReset === 'function') onReset();
+
+        history.current = [];
+        setCurrentRoute(route);
+    }, [onReset]);
 
     return (
         <RouterChildren
-            className={className}
-            navigate={navigate}
+            workflow={{
+                navigate,
+                back,
+                reset,
+            }}
         />
     )
 }

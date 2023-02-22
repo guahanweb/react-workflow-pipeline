@@ -6,21 +6,35 @@ export type ComponentProps = {
 }
 
 export type WorkflowProps = ComponentProps & {
-    defaultRoute: string;
+    loading?: boolean;
+    onReset?: () => void;
     route?: string;
 }
 
-export type StepProps = Omit<ComponentProps, 'children'> & {
-    id: string;
-    Component: (props: any) => JSX.Element;
-    navigate?: (route: string) => void;
-}
+type BaseRouterProps = Omit<ComponentProps, 'children'>
+
+export type RouterProps = BaseRouterProps & {
+    route: string;
+    steps: RegisteredStepList;
+    onReset?: () => void;
+};
 
 export type StepComponentProps = Omit<ComponentProps, 'children'> & {
-    navigate: (route: string) => void;
+    id: string;
+    state: any;
+    Component: (props: any) => JSX.Element;
+    nextStep: string;
+    isFinal?: boolean;
 }
 
-export type RouterProps = ComponentProps & {
-    route: string;
-    navigate: (route: string) => void;
-};
+export type RenderedStepProps = StepComponentProps & {
+    workflow: BaseRouterProps & {
+        navigate: (nextStep: string) => void;
+        back: () => void;
+        reset: () => void;
+    }
+}
+
+export type RegisteredStepList = {
+    [key: string]: JSX.Element;
+}

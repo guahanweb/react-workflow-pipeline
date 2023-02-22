@@ -58,3 +58,24 @@ export function areEmptyObjects<T>(...values: T[]): boolean {
 export function has(object: unknown, key: string): boolean {
     return object != null && Object.prototype.hasOwnProperty.call(object, key);
 }
+
+export const combineReducers = (slices: any) => (state: any, action: any) => 
+    Object.keys(slices).reduce(
+        (acc, prop) => ({
+            ...acc,
+            [prop]: slices[prop](acc[prop], action),
+        }),
+        state
+    )
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function asyncDispatch(dispatch: Function) {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    return function (action: any | Function) {
+        if (typeof action === 'function') {
+            action(dispatch);
+        } else {
+            dispatch(action);
+        }
+    }
+}
